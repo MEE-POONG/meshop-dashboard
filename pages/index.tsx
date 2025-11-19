@@ -37,7 +37,7 @@ export default function AdminDashboard() {
     <AdminLayout>
       <div className="space-y-6 lg:space-y-8">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-6 lg:p-8 text-white shadow-xl">
+        <div className="bg-linear-to-r from-blue-600 to-blue-500 rounded-2xl p-6 lg:p-8 text-white shadow-xl">
           <h2 className="text-2xl lg:text-4xl font-bold mb-2">Overview</h2>
           <p className="text-blue-50 text-sm lg:text-base">ภาพรวมของร้านค้าและประสิทธิภาพการขาย</p>
         </div>
@@ -75,13 +75,13 @@ export default function AdminDashboard() {
 
         {/* Recent Orders Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+          <div className="px-6 py-5 border-b border-gray-200 bg-linear-to-r from-gray-50 to-white">
             <h3 className="text-xl lg:text-2xl font-bold text-gray-900">ออเดอร์ล่าสุด</h3>
             <p className="text-sm text-gray-500 mt-1">รายการออเดอร์ล่าสุดในระบบ</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+              <thead className="bg-linear-to-r from-gray-50 to-gray-100">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                     Order ID

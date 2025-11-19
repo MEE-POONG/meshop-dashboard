@@ -54,7 +54,7 @@ export default function AdminUsersPage() {
     <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-gradient-to-r from-purple-600 to-purple-500 rounded-2xl p-6 lg:p-8 text-white shadow-xl">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-linear-to-r from-purple-600 to-purple-500 rounded-2xl p-6 lg:p-8 text-white shadow-xl">
           <div>
             <h2 className="text-2xl lg:text-4xl font-bold mb-2">Admin Users</h2>
             <p className="text-purple-50 text-sm lg:text-base">จัดการผู้ดูแลระบบทั้งหมด</p>
@@ -114,7 +114,7 @@ export default function AdminUsersPage() {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+              <thead className="bg-linear-to-r from-gray-50 to-gray-100">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                     Admin
@@ -185,7 +185,7 @@ export default function AdminUsersPage() {
         </div>
 
         {/* Permissions Info */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
+        <div className="bg-linear-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
           <h3 className="text-lg font-bold text-gray-900 mb-4">🔐 สิทธิ์การเข้าถึง</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white rounded-xl p-4 shadow-sm">
@@ -259,7 +259,7 @@ export default function AdminUsersPage() {
               >
                 ยกเลิก
               </button>
-              <button className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-500 text-white rounded-xl font-bold hover:shadow-lg transition-all">
+              <button className="flex-1 px-6 py-3 bg-linear-to-r from-purple-600 to-purple-500 text-white rounded-xl font-bold hover:shadow-lg transition-all">
                 เพิ่ม Admin
               </button>
             </div>

@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
       {/* Topbar */}
       <header className="bg-white shadow-md fixed top-0 left-0 right-0 z-20 border-b border-gray-200">
         <div className="flex items-center justify-between px-4 lg:px-6 py-4">
@@ -41,7 +41,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
+            <h1 className="text-xl lg:text-2xl font-bold bg-linear-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
               MeShop Dashboard
             </h1>
           </div>
@@ -53,7 +53,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
             <div className="hidden sm:block text-sm text-gray-600 font-medium">User</div>
-            <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+            <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               U
             </div>
           </div>
@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                       isActive(item.path)
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105'
+                        ? 'bg-linear-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105'
                         : 'text-gray-700 hover:bg-gray-50 hover:scale-102 hover:shadow-md'
                     }`}
                   >
