@@ -8,13 +8,14 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const menuItems = [
     { name: 'Overview', path: '/', icon: '📊' },
     { name: 'Products', path: '/products', icon: '📦' },
     { name: 'Orders', path: '/orders', icon: '🛒' },
     { name: 'Customers', path: '/customers', icon: '👥' },
+    { name: 'Promotions', path: '/promotions', icon: '🎁' },
     { name: 'Admin Users', path: '/admin-users', icon: '👨‍💼' },
     { name: 'Settings', path: '/settings', icon: '⚙️' },
   ];
@@ -32,16 +33,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <header className="bg-white shadow-md fixed top-0 left-0 right-0 z-20 border-b border-gray-200">
         <div className="flex items-center justify-between px-4 lg:px-6 py-4">
           <div className="flex items-center gap-4">
-            {/* Mobile Menu Button */}
+            {/* Menu Toggle Button - All Screens */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              title={sidebarOpen ? 'ปิด Sidebar' : 'เปิด Sidebar'}
             >
               <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-xl lg:text-2xl font-bold bg-linear-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
+            <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
               MeShop Dashboard
             </h1>
           </div>
@@ -60,7 +62,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
       </header>
 
-      {/* Overlay for mobile */}
+      {/* Overlay for mobile when sidebar is open */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden"
@@ -71,7 +73,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex pt-16">
         {/* Sidebar */}
         <aside
-          className={`w-64 bg-white shadow-xl fixed left-0 top-16 bottom-0 overflow-y-auto z-10 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          className={`w-64 bg-white shadow-xl fixed left-0 top-16 bottom-0 overflow-y-auto z-10 transform transition-transform duration-300 ease-in-out ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
@@ -81,10 +83,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <li key={item.path}>
                   <Link
                     href={item.path}
-                    onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                       isActive(item.path)
-                        ? 'bg-linear-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105'
+                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105'
                         : 'text-gray-700 hover:bg-gray-50 hover:scale-102 hover:shadow-md'
                     }`}
                   >
@@ -98,7 +99,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-64 p-4 lg:p-8 min-h-screen">
+        <main className={`flex-1 p-4 lg:p-8 min-h-screen transition-all duration-300 ${
+          sidebarOpen ? 'ml-64' : 'ml-0'
+        }`}>
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
