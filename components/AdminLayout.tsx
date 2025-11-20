@@ -13,6 +13,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const menuItems = [
     { name: 'Overview', path: '/', icon: '📊' },
     { name: 'Products', path: '/products', icon: '📦' },
+    { name: 'Categories', path: '/categories', icon: '📑' },
     { name: 'Orders', path: '/orders', icon: '🛒' },
     { name: 'Customers', path: '/customers', icon: '👥' },
     { name: 'Promotions', path: '/promotions', icon: '🎁' },

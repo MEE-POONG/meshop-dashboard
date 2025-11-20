@@ -12,6 +12,21 @@ interface Product {
   flashSalePrice?: number;
 }
 
+interface Coupon {
+  id: string;
+  code: string;
+  type: 'percentage' | 'fixed' | 'free_shipping';
+  value: number;
+  minPurchase: number;
+  maxDiscount?: number;
+  usageLimit: number;
+  usageCount: number;
+  startDate: string;
+  endDate: string;
+  status: 'active' | 'inactive' | 'expired';
+  description: string;
+}
+
 const mockProducts: Product[] = [
   { id: '1', name: 'เสื้อยืดคอกลม สีขาว', price: 299, image: '👕', isFlashSale: true, isRecommend: false, isNew: false, flashSalePrice: 199 },
   { id: '2', name: 'กางเกงยีนส์ขายาว', price: 890, image: '👖', isFlashSale: false, isRecommend: true, isNew: false },
@@ -19,6 +34,14 @@ const mockProducts: Product[] = [
   { id: '4', name: 'กระเป๋าสะพาย หนังแท้', price: 2490, image: '👜', isFlashSale: false, isRecommend: false, isNew: true },
   { id: '5', name: 'หมวกแก๊ป สีน้ำเงิน', price: 350, image: '🧢', isFlashSale: false, isRecommend: true, isNew: true },
   { id: '6', name: 'แว่นตากันแดด', price: 790, image: '🕶️', isFlashSale: false, isRecommend: false, isNew: true },
+];
+
+const mockCoupons: Coupon[] = [
+  { id: '1', code: 'WELCOME10', type: 'percentage', value: 10, minPurchase: 500, usageLimit: 100, usageCount: 45, startDate: '2025-01-01', endDate: '2025-12-31', status: 'active', description: 'ส่วนลด 10% สำหรับลูกค้าใหม่' },
+  { id: '2', code: 'FREESHIP', type: 'free_shipping', value: 0, minPurchase: 1000, usageLimit: 500, usageCount: 234, startDate: '2025-01-01', endDate: '2025-12-31', status: 'active', description: 'จัดส่งฟรีเมื่อซื้อครบ 1,000 บาท' },
+  { id: '3', code: 'SAVE100', type: 'fixed', value: 100, minPurchase: 800, usageLimit: 200, usageCount: 87, startDate: '2025-11-01', endDate: '2025-11-30', status: 'active', description: 'ลด 100 บาท เมื่อซื้อครบ 800' },
+  { id: '4', code: 'MEGA50', type: 'percentage', value: 50, minPurchase: 2000, maxDiscount: 500, usageLimit: 50, usageCount: 50, startDate: '2025-10-01', endDate: '2025-10-31', status: 'expired', description: 'ส่วนลด 50% สูงสุด 500 บาท' },
+  { id: '5', code: 'VIP20', type: 'percentage', value: 20, minPurchase: 1500, maxDiscount: 300, usageLimit: 1000, usageCount: 12, startDate: '2025-11-15', endDate: '2025-12-15', status: 'active', description: 'ส่วนลด VIP 20% สูงสุด 300 บาท' },
 ];
 
 export default function PromotionsPage() {
@@ -34,6 +57,10 @@ export default function PromotionsPage() {
   });
 
   const [products, setProducts] = useState(mockProducts);
+  const [coupons, setCoupons] = useState(mockCoupons);
+  const [showAddCouponModal, setShowAddCouponModal] = useState(false);
+  const [showEditCouponModal, setShowEditCouponModal] = useState(false);
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   const toggleSection = (section: keyof typeof sections) => {
     setSections({ ...sections, [section]: !sections[section] });
@@ -313,6 +340,183 @@ export default function PromotionsPage() {
           </div>
         </div>
 
+        {/* Coupons Management Section */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50 flex items-center justify-between">
+            <div>
+              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                🎫 จัดการโค้ดส่วนลด / คูปอง
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">สร้างและจัดการโค้ดส่วนลด โค้ดจัดส่งฟรี</p>
+            </div>
+            <button
+              onClick={() => setShowAddCouponModal(true)}
+              className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all hover:shadow-xl hover:scale-105 shadow-lg"
+            >
+              <span className="text-xl">+</span>
+              สร้างโค้ดใหม่
+            </button>
+          </div>
+
+          {/* Coupons Stats */}
+          <div className="p-6 bg-gray-50 border-b border-gray-200">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-gray-900">{coupons.length}</p>
+                <p className="text-xs text-gray-500 mt-1">ทั้งหมด</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-green-600">{coupons.filter(c => c.status === 'active').length}</p>
+                <p className="text-xs text-gray-500 mt-1">ใช้งานได้</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-red-600">{coupons.filter(c => c.status === 'expired').length}</p>
+                <p className="text-xs text-gray-500 mt-1">หมดอายุ</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-blue-600">{coupons.reduce((sum, c) => sum + c.usageCount, 0)}</p>
+                <p className="text-xs text-gray-500 mt-1">ใช้ไปแล้ว</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Coupons Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                    โค้ด
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                    ประเภท
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                    ส่วนลด
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                    เงื่อนไข
+                  </th>
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                    การใช้งาน
+                  </th>
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                    ระยะเวลา
+                  </th>
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                    สถานะ
+                  </th>
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {coupons.map((coupon) => {
+                  const getTypeInfo = () => {
+                    if (coupon.type === 'percentage') return { icon: '📊', text: '%', color: 'bg-blue-100 text-blue-700' };
+                    if (coupon.type === 'fixed') return { icon: '💰', text: 'บาท', color: 'bg-green-100 text-green-700' };
+                    return { icon: '🚚', text: 'ฟรี', color: 'bg-purple-100 text-purple-700' };
+                  };
+                  const typeInfo = getTypeInfo();
+
+                  return (
+                    <tr key={coupon.id} className="hover:bg-orange-50 transition-all duration-200">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{typeInfo.icon}</span>
+                          <div>
+                            <p className="text-sm font-bold text-gray-900 font-mono bg-yellow-100 px-2 py-1 rounded">
+                              {coupon.code}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">{coupon.description}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-3 py-1.5 rounded-xl text-xs font-bold ${typeInfo.color}`}>
+                          {coupon.type === 'percentage' ? 'ส่วนลด %' : coupon.type === 'fixed' ? 'ส่วนลดเงิน' : 'จัดส่งฟรี'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <p className="text-sm font-bold text-orange-600">
+                          {coupon.type === 'free_shipping'
+                            ? 'ฟรีค่าส่ง'
+                            : coupon.type === 'percentage'
+                            ? `${coupon.value}%`
+                            : `฿${coupon.value}`}
+                        </p>
+                        {coupon.maxDiscount && (
+                          <p className="text-xs text-gray-500">สูงสุด ฿{coupon.maxDiscount}</p>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <p className="text-sm text-gray-600">
+                          ขั้นต่ำ <span className="font-semibold">฿{coupon.minPurchase.toLocaleString()}</span>
+                        </p>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex flex-col items-center gap-1">
+                          <p className="text-sm font-bold text-gray-900">
+                            {coupon.usageCount} / {coupon.usageLimit}
+                          </p>
+                          <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-orange-500"
+                              style={{ width: `${(coupon.usageCount / coupon.usageLimit) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <p className="text-xs text-gray-600">{coupon.startDate}</p>
+                        <p className="text-xs text-gray-400">ถึง</p>
+                        <p className="text-xs text-gray-600">{coupon.endDate}</p>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <span
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold ${
+                            coupon.status === 'active'
+                              ? 'bg-green-100 text-green-700'
+                              : coupon.status === 'expired'
+                              ? 'bg-red-100 text-red-700'
+                              : 'bg-gray-100 text-gray-700'
+                          }`}
+                        >
+                          {coupon.status === 'active' ? 'ใช้งานได้' : coupon.status === 'expired' ? 'หมดอายุ' : 'ปิดใช้งาน'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center gap-3">
+                          <button
+                            onClick={() => {
+                              setSelectedCoupon(coupon);
+                              setShowEditCouponModal(true);
+                            }}
+                            className="text-blue-600 hover:text-blue-800 text-sm font-bold hover:underline transition-all"
+                          >
+                            แก้ไข
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (confirm('คุณต้องการลบโค้ดนี้หรือไม่?')) {
+                                setCoupons(coupons.filter(c => c.id !== coupon.id));
+                              }
+                            }}
+                            className="text-red-600 hover:text-red-800 text-sm font-bold hover:underline transition-all"
+                          >
+                            ลบ
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         {/* Save Button */}
         <div className="flex justify-end">
           <button className="px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
@@ -320,6 +524,235 @@ export default function PromotionsPage() {
           </button>
         </div>
       </div>
+
+      {/* Add Coupon Modal */}
+      {showAddCouponModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl p-6 lg:p-8 max-w-2xl w-full shadow-2xl my-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">🎫 สร้างโค้ดส่วนลดใหม่</h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">รหัสคูปอง *</label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono uppercase"
+                    placeholder="WELCOME10"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">ประเภท *</label>
+                  <select className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium">
+                    <option value="percentage">ส่วนลด %</option>
+                    <option value="fixed">ส่วนลดเงิน (บาท)</option>
+                    <option value="free_shipping">จัดส่งฟรี</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">มูลค่าส่วนลด *</label>
+                  <input
+                    type="number"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="10"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">ใส่ตัวเลข (% หรือ บาท)</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">ส่วนลดสูงสุด</label>
+                  <input
+                    type="number"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">สำหรับส่วนลด % เท่านั้น</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">ยอดซื้อขั้นต่ำ *</label>
+                  <input
+                    type="number"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">จำนวนการใช้ *</label>
+                  <input
+                    type="number"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="100"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">วันเริ่มต้น *</label>
+                  <input
+                    type="date"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">วันสิ้นสุด *</label>
+                  <input
+                    type="date"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">คำอธิบาย</label>
+                <textarea
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  placeholder="ส่วนลด 10% สำหรับลูกค้าใหม่"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowAddCouponModal(false)}
+                className="flex-1 px-6 py-3 border border-gray-300 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-all"
+              >
+                ยกเลิก
+              </button>
+              <button className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-xl font-bold hover:shadow-lg transition-all">
+                สร้างโค้ด
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Coupon Modal */}
+      {showEditCouponModal && selectedCoupon && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl p-6 lg:p-8 max-w-2xl w-full shadow-2xl my-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">✏️ แก้ไขโค้ดส่วนลด</h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">รหัสคูปอง</label>
+                  <input
+                    type="text"
+                    defaultValue={selectedCoupon.code}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono uppercase"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">ประเภท</label>
+                  <select
+                    defaultValue={selectedCoupon.type}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                  >
+                    <option value="percentage">ส่วนลด %</option>
+                    <option value="fixed">ส่วนลดเงิน (บาท)</option>
+                    <option value="free_shipping">จัดส่งฟรี</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">มูลค่าส่วนลด</label>
+                  <input
+                    type="number"
+                    defaultValue={selectedCoupon.value}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">ส่วนลดสูงสุด</label>
+                  <input
+                    type="number"
+                    defaultValue={selectedCoupon.maxDiscount || ''}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">ยอดซื้อขั้นต่ำ</label>
+                  <input
+                    type="number"
+                    defaultValue={selectedCoupon.minPurchase}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">จำนวนการใช้</label>
+                  <input
+                    type="number"
+                    defaultValue={selectedCoupon.usageLimit}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">วันเริ่มต้น</label>
+                  <input
+                    type="date"
+                    defaultValue={selectedCoupon.startDate}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">วันสิ้นสุด</label>
+                  <input
+                    type="date"
+                    defaultValue={selectedCoupon.endDate}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">สถานะ</label>
+                <select
+                  defaultValue={selectedCoupon.status}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                >
+                  <option value="active">ใช้งานได้</option>
+                  <option value="inactive">ปิดใช้งาน</option>
+                  <option value="expired">หมดอายุ</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">คำอธิบาย</label>
+                <textarea
+                  defaultValue={selectedCoupon.description}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowEditCouponModal(false)}
+                className="flex-1 px-6 py-3 border border-gray-300 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-all"
+              >
+                ยกเลิก
+              </button>
+              <button className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-xl font-bold hover:shadow-lg transition-all">
+                บันทึกการแก้ไข
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }
